@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http: //www.gnu.org/licenses/>.
  */
+// The dialog that lists the installed applications by menu category (from the original widget). Used by AppPicker.
+// Modified 2026 for the fork (io.github.zebieksterc.netspeedwidget); see ChangeLog.
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Dialogs
@@ -129,6 +131,7 @@ Dialog {
         }
     }
 
+    // Fills the list with the applications of one menu category (and, through the data source, its subcategories)
     function listMenuEntries(menuId) {
         for (var i = 0; i < appsSource.data[menuId].entries.length; i++) {
             var entry = appsSource.data[menuId].entries[i]

@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- From Netspeed Widget 3.1 (Daniel Faust). Modified 2026 for the fork (io.github.zebieksterc.netspeedwidget); see ChangeLog. -->
 <kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
     <kcfgfile name=""/>
 
+    <!-- Every setting of the widget with its type and default. The group names are only names in the
+         settings file; the tabs of the dialog are defined in config.qml.
+         General: the options of the original widget's first tab. -->
     <group name="General">
         <entry name="showSeparately" type="Bool">
             <default>true</default>
@@ -59,6 +63,7 @@
         </entry>
     </group>
 
+    <!-- Advanced: launch on click, selected interfaces -->
     <group name="Advanced">
         <entry name="launchApplicationEnabled" type="Bool">
             <default>false</default>
@@ -72,6 +77,42 @@
         <entry name="interfacesWhitelist" type="StringList">
             <default></default>
         </entry>
+    </group>
+
+    <!-- Extras: everything the fork added (shown on the tabs Appearance, Connection, Data limits, Advanced).
+         usageState is written only by the widget (the counters as JSON).
+         dataLimits (the list of limits as JSON) is written by the Data limits page, and by the widget when it
+         sets an expired "already used" figure back to 0.
+         resetRequest is written by the Data limits page and cleared by the widget.
+         The widget also writes speedUnits (mouse wheel).
+         "Extras" is only the name of this group in the settings file; there is no tab of that name any more. -->
+    <group name="Extras">
+        <entry name="decimals" type="Int"><default>1</default></entry>
+        <entry name="fixedDigits" type="Bool"><default>false</default></entry>
+        <entry name="panelGraph" type="Bool"><default>false</default></entry>
+        <entry name="showSignal" type="Bool"><default>false</default></entry>
+        <entry name="showSignalPercent" type="Bool"><default>false</default></entry>
+        <entry name="signalPercentPosition" type="String"><default>left</default></entry>
+        <entry name="showFrame" type="Bool"><default>false</default></entry>
+        <entry name="detailsZoom" type="Int"><default>100</default></entry>
+        <entry name="showDisconnected" type="Bool"><default>true</default></entry>
+        <entry name="notifyConnection" type="Bool"><default>false</default></entry>
+        <entry name="hideWhenIdle" type="Bool"><default>false</default></entry>
+        <entry name="idleThreshold" type="Int"><default>1</default></entry>
+        <entry name="scrollSwitchesUnits" type="Bool"><default>true</default></entry>
+        <entry name="middleClickCopiesIp" type="Bool"><default>true</default></entry>
+        <entry name="pingEnabled" type="Bool"><default>false</default></entry>
+        <entry name="pingHost" type="String"><default></default></entry>
+        <entry name="pingInterval" type="Int"><default>15</default></entry>
+        <entry name="externalIpEnabled" type="Bool"><default>false</default></entry>
+        <entry name="externalIpUrl" type="String"><default>https://api.ipify.org</default></entry>
+        <entry name="periodStartDay" type="Int"><default>1</default></entry>
+        <entry name="resetRequest" type="String"><default></default></entry>
+        <entry name="dataLimits" type="String"><default></default></entry>
+        <entry name="dataLimitsPanel" type="String"><default>auto</default></entry>
+        <entry name="perInterfaceUsage" type="Bool"><default>false</default></entry>
+        <entry name="signalWarnLevel" type="Int"><default>0</default></entry>
+        <entry name="usageState" type="String"><default></default></entry>
     </group>
 
 </kcfg>

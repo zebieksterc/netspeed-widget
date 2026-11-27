@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Netspeed Widget
+Comment=Notifications of the Netspeed Widget (fork)
+Icon=network-connect
+Exec=true
+NoDisplay=true
+X-GNOME-UsesNotifications=true

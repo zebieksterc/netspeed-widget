@@ -1,0 +1,123 @@
+# Tests the widget and builds the .plasmoid file (the package/ folder as a zip).
+#
+# Runs on every push to master, on pull requests, and by hand:
+#   Actions > Build > Run workflow
+# The file is then attached to the run as an artifact.
+#
+# Pushing a version tag (v4.1, ...) also publishes a release with the file.
+# A run by hand does so too when "release" is ticked; the tag of the version
+# in package/metadata.json must exist then.
+name: Build
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Also publish a release (the tag v<version> must exist)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Tests of the calculations
+        run: node tests/helpers.test.js package/contents/code/utils.js
+
+      - name: Check the scripts
+        run: shellcheck install.sh uninstall.sh check.sh
+
+      - name: Version
+        id: version
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          version=$(jq -r '.KPlugin.Version' package/metadata.json)
+          case "$version" in
+            ''|null|*[!0-9.]*) echo "::error::No usable version in package/metadata.json: $version"; exit 1 ;;
+          esac
+          if [ "$REF_TYPE" = tag ] && [ "$REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $REF_NAME does not match version $version in package/metadata.json"
+            exit 1
+          fi
+          if ! grep -q "^$version (" ChangeLog; then
+            echo "::error::ChangeLog has no entry for $version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build the .plasmoid file
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir dist
+          (cd package && zip -q -r -X "../dist/netspeed-widget-$VERSION.plasmoid" .)
+          unzip -l "dist/netspeed-widget-$VERSION.plasmoid" | tail -n 1
+          # metadata.json must be at the top of the archive
+          unzip -p "dist/netspeed-widget-$VERSION.plasmoid" metadata.json | jq -e '.KPlugin.Id' > /dev/null
+
+      - name: Release notes
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          {
+            echo "Install: download \`netspeed-widget-$VERSION.plasmoid\`, then right-click the panel >"
+            echo "*Add or Manage Widgets* > *Get New* > *Install Widget From Local File*, or run"
+            echo "\`kpackagetool6 --type Plasma/Applet --install netspeed-widget-$VERSION.plasmoid\`"
+            echo "(\`--upgrade\` instead of \`--install\` when an older version is installed), and restart Plasma."
+            echo "With git: clone the repository and run \`./install.sh\` (see the README)."
+            echo
+            echo '```'
+            # the entry of this version: from its heading to the next version heading
+            awk -v v="$VERSION" '
+              index($0, v " (") == 1 { on = 1; print; next }
+              on && /^[0-9]+(\.[0-9]+)+ \(/ { exit }
+              on { print }' ChangeLog | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}'
+            echo '```'
+          } > dist/notes.md
+          cat dist/notes.md
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: netspeed-widget-${{ steps.version.outputs.version }}
+          path: dist/
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.release)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: netspeed-widget-${{ needs.build.outputs.version }}
+          path: dist
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          file="dist/netspeed-widget-$VERSION.plasmoid"
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            gh release upload "v$VERSION" "$file" --clobber
+            gh release edit "v$VERSION" --notes-file dist/notes.md
+          else
+            gh release create "v$VERSION" "$file" --verify-tag \
+              --title "Netspeed Widget (fork) $VERSION" --notes-file dist/notes.md
+          fi

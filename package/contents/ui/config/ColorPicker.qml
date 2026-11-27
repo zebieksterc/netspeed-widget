@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+// A round button that shows a colour and opens a colour dialog (from the original widget). Used on the General page.
+// Modified 2026 for the fork (io.github.zebieksterc.netspeedwidget); see ChangeLog.
 
 import QtQuick
 import QtQuick.Layouts

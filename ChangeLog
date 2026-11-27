@@ -1,3 +1,56 @@
+4.0 (2026.11.27) - fork, id io.github.zebieksterc.netspeedwidget (installs next to the original):
+
+New in the panel
+Optional line with the network name, router latency and Wi-Fi signal (as a filled bar, or as text with a thin bar)
+Optional line per data limit: used / limit, percentage, thin bar; a warning triangle when the limit is reached
+Optional frame; with a data limit it changes gradually from green through yellow and orange to red
+Optional small graph behind the numbers, Wi-Fi signal bar and percentage, dimming while not connected, a small mark while idle
+0 or 1 decimal places, digits of equal width; the font size setting also scales the extra lines
+Mouse: middle click copies the IP address (IPv4, else IPv6), the wheel switches between bits and bytes
+Tooltip: totals, today, limits, signal, network name, router latency, data source, version
+
+New: details popup on click
+Current speeds and a graph of the last 60 readings
+All connections: peak, session, today, this month; Copy all; Reset (session, today, month, limits, history, everything)
+One box per interface: network name, router latency, signal, speed, totals, its data limit, IPv4 and IPv6 addresses (a click copies)
+History of the last 12 months
+Internet check on request: external IP address and latency to an internet host
+One size for the whole popup, set in percent (80 - 200 %)
+With "Launch application on click" the details open from the right-click menu
+
+New: counters, limits, notifications
+Usage counters for this session, today and this month, optionally per interface; the month can start on any day (1 - 28)
+Traffic from the time the widget was not running (Plasma restart, crash, before login) is added at the next start
+Up to 8 data limits, each for all connections or one interface, with its own start day and an "already used" start value
+Notifications, kept in Plasma's notification history: connection lost and restored, Wi-Fi signal weak, data limit at 80 % and reached, IP address copied
+Router latency measured at a chosen interval
+
+Settings
+Five tabs: General, Appearance, Connection, Data limits, Advanced; every page scrolls
+Options explain themselves on hover; an option without effect in the current combination is dimmed, most with a warning triangle that gives the reason
+
+Changed from 3.1
+Speeds come from Plasma's system-monitor sensors: no process is started per update, and VPN/bridge/container traffic is not counted twice
+"/proc/net/dev" is only read for selected interfaces, while the details are open, or when the sensors give no data
+Launch application on click without the private quicklaunch module (uses kstart or gtk-launch)
+Kilobit label is now "kb/s"
+Removed files the fork does not use: CMakeLists.txt, release.sh, run.sh, netspeed-widget.png, package/contents/ui/Launcher.qml (README and screenshot of the original are kept as docs/README_upstream.md and docs/README_upstream.png)
+
+Fixes of 3.1
+Speeds in bits were shown 2.4 % too high
+Negative speeds after an interface was recreated
+Old speed stayed on screen when reading failed
+Selecting interfaces did not enable the Apply button
+Error when choosing an application in the settings
+Values just below the next unit were printed as "1000.0" / "1024.0"
+
+Scripts and tests
+install.sh (no root; restores the previous version if the installation fails; can install any tagged version), uninstall.sh, check.sh (health check; --try runs the widget in a window of its own)
+tests/helpers.test.js (430 tests of the calculations) and tests/harness/ (runs the QML without Plasma)
+docs/GUIDE.md: a guide with pictures for first-time users
+GitHub Actions workflow: tests, builds the .plasmoid file, publishes a release for a version tag
+The notification entry is part of the package; the widget puts it in place itself when it is missing (for installs from a .plasmoid file)
+
 3.1 (2024.03.10):
 Fix tooltip area
 

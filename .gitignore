@@ -1,3 +1,5 @@
-*.qmlc
 *.plasmoid
+*.pyc
+*.qmlc
+__pycache__/
 build

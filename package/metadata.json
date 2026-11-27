@@ -1,22 +1,23 @@
 {
+    "KPackageStructure": "Plasma/Applet",
     "KPlugin": {
         "Authors": [
             {
                 "Email": "hessijames@gmail.com",
                 "Name": "Daniel Faust"
+            },
+            {
+                "Name": "zebieksterc (fork)"
             }
         ],
         "Category": "System Information",
-        "Description": "Displays the currently used network bandwidth",
+        "Description": "Network speed in the panel; details with graph, usage counters, data limits, Wi-Fi signal, router latency and addresses (fork)",
         "Icon": "network-connect",
-        "Id": "org.kde.netspeedWidget",
-        "License": "GPL2",
-        "Name": "Netspeed Widget",
-        "KPackageStructure": [
-            "Plasma/Applet"
-        ],
-        "Version": "3.1",
-        "Website": "https://github.com/dfaust/plasma-applet-netspeed-widget"
+        "Id": "io.github.zebieksterc.netspeedwidget",
+        "License": "GPL-2.0+",
+        "Name": "Netspeed Widget (fork)",
+        "Version": "4.0",
+        "Website": "https://github.com/zebieksterc/netspeed-widget"
     },
     "X-KDE-ParentApp": "",
     "X-Plasma-API-Minimum-Version": "6.0",

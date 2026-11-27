@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
+// A button that opens AppMenuDialog and holds the chosen application (from the original widget). Used on the Advanced page.
+// Modified 2026 for the fork (io.github.zebieksterc.netspeedwidget); see ChangeLog.
 import QtQuick
 import org.kde.plasma.plasma5support as Plasma5Support
 import org.kde.plasma.components as PlasmaComponents
@@ -32,7 +34,7 @@ Item {
     onMenuIdChanged: {
         if (appsSource.data[menuId]) {
             appButton.text = appsSource.data[menuId].name
-            appButton.iconSource = appsSource.data[menuId].iconName
+            appButton.icon.name = appsSource.data[menuId].iconName
         } else {
             appButton.text = i18n('Choose application ...')
         }
@@ -52,7 +54,7 @@ Item {
 
     AppMenuDialog {
         id: appMenuDialog
-        x: (parent.width - width) / 2
+        x: parent ? (parent.width - width) / 2 : 0
         onAccepted: {
             menuId = selectedMenuId
         }
